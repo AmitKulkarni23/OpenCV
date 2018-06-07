@@ -5,6 +5,11 @@ import cv2
 # Load images
 # API used -> cv2.imread
 
+# cv2.imread
+# 1st argument -> image file name
+# 2nd argument -> cv2.IMREAD_COLOR | cv2.IMREAD_GRAYSCALE | cv2.IMREAD_UNCHANGED
+                     # 1           | 0                    |       -1
+
 # String constant representing image file name
 img_file_name = "opencv-logo.png"
 
