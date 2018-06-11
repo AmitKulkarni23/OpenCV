@@ -29,6 +29,9 @@ ret, thresh = cv2.threshold(src=img_gray, thresh=127, maxval=255, type=cv2.THRES
 # Find contours
 im2, contours, hierarchy = cv2.findContours(image=thresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE)
 
+# Print number of contours
+print("Number of contours = ", len(contours))
+
 # Draw the contours
 cv2.drawContours(image=img, contours=contours, contourIdx=-1, color=contours_color, thickness=3)
 
