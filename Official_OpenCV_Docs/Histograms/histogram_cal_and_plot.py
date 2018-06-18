@@ -17,6 +17,7 @@
 # 4th arg - histSize
 # 5th arg - range
 
+# Credits -> https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_histograms/py_histogram_begins/py_histogram_begins.html#histograms-getting-started
 #############################
 
 import cv2
@@ -34,3 +35,12 @@ hist = cv2.calcHist([img], [0], None, [256], [0, 256])
 # Now plot teh histogram
 plt.hist(img.ravel(),256,[0,256])
 plt.show()
+
+
+# We can show teh histogram color wise
+# color = ("b", "g", "r")
+# for i, col in enumerate(color):
+#     histr = cv2.calcHist([img],[i],None,[256],[0,256])
+#     plt.plot(histr,color = col)
+#     plt.xlim([0,256])
+# plt.show()
