@@ -23,7 +23,7 @@ while True:
     # Now we will perform Haar Eye classification here
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    eyes = eye_cascade_object.detectMultiScale(gray, scaleFactor=1.02, minNeighbors=20, minSize=(10, 10))
+    eyes = eye_cascade_object.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=20, minSize=(10, 10))
 
     # Now draw teh eyes
     for (x, y, w, h) in eyes:
@@ -35,10 +35,8 @@ while True:
 
         cv2.imshow("Eyes", frame)
 
-    # print("Number of eyes = ", len(eyes))
-
     # Display teh fame
-    cv2.imshow("Video Frame", frame)
+    # cv2.imshow("Video Frame", frame)
 
     # Break out of while loop
     if cv2.waitKey(1) & 0xFF == ord('q'):
