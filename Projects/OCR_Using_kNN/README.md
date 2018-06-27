@@ -7,4 +7,9 @@ Each digit is a 20x20 image.
 
 ## Accuracy Achieved - 91.76%
 
-### Credits ->[OpenCV kNN tutorial](https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_ml/py_knn/py_knn_opencv/py_knn_opencv.html)
+### Credits -> [OpenCV kNN tutorial](https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_ml/py_knn/py_knn_opencv/py_knn_opencv.html)
+
+---
+
+## OCR using tessarect
+- Check file ocr_tesseract.py
