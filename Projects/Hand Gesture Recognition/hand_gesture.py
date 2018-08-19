@@ -22,6 +22,7 @@
 import cv2
 import numpy as np
 from skin_detector import SkinDetector
+from face_detector import FaceDetector
 
 def main_method():
     """
@@ -52,11 +53,14 @@ def main_method():
         # Draw the sample rectangles
         skin_det.skin_color_sampler(frame_out)
 
+        # Face Detector
+        face_det.remove_faces(frame)
+
         hand_mask = skin_det.get_skin_mask(frame);
 
         cv2.imshow("Frame Out Window", frame_out)
         cv2.imshow("Hand Mask", hand_mask)
-
+        
         key = cv2.waitKey(1)
         # Break out of teh while loop on pressing 'q'
         if key & 0xFF == ord('q'):
