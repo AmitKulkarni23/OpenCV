@@ -21,6 +21,7 @@
 # Import statements
 import cv2
 import numpy as np
+from skin_detector import SkinDetector
 
 def main_method():
     """
@@ -40,12 +41,32 @@ def main_method():
     while True:
 
         # Create all the necessary objects
-        background_remover = BackgroundRemover()
+        # background_remover = BackgroundRemover()
         skin_det = SkinDetector()
-        face_detector = FaceDetector()
-        finger_count - FingerCount()
+        # face_detector = FaceDetector()
+        # finger_count - FingerCount()
 
         # Read the frames from the camera
-        return_code, frmae = video_capture.read()
+        return_code, frame = video_capture.read()
 
-        print("height = ", )
+        frame_out = frame.copy()
+
+        # Draw the sample rectangles
+        skin_det.skin_color_sampler(frame_out)
+
+        cv2.imshow("Frame Out Window", frame_out)
+
+        # Break out of teh while loop on pressing 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            print("Breaking Out")
+            break
+
+    # Release teh videocapyure object
+    video_capture.release()
+
+    # Destroy all open windows
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main_method()
