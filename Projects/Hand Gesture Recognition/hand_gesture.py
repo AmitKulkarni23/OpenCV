@@ -38,13 +38,11 @@ def main_method():
         print("Camera is busy. Exiting the program")
         return -1
 
-    while True:
+    # Create all the necessary objects
+    skin_det = SkinDetector()
+    face_det = FaceDetector()
 
-        # Create all the necessary objects
-        # background_remover = BackgroundRemover()
-        skin_det = SkinDetector()
-        # face_detector = FaceDetector()
-        # finger_count - FingerCount()
+    while True:
 
         # Read the frames from the camera
         return_code, frame = video_capture.read()
@@ -54,12 +52,23 @@ def main_method():
         # Draw the sample rectangles
         skin_det.skin_color_sampler(frame_out)
 
-        cv2.imshow("Frame Out Window", frame_out)
+        hand_mask = skin_det.get_skin_mask(frame);
 
+        cv2.imshow("Frame Out Window", frame_out)
+        cv2.imshow("Hand Mask", hand_mask)
+
+        key = cv2.waitKey(1)
         # Break out of teh while loop on pressing 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            print("Breaking Out")
+        if key & 0xFF == ord('q'):
+            print("Qutting Now")
             break
+
+        if key == 115:
+            # The user pressed s
+            # Then we need to calibrate
+            skin_det.calibrate(frame)
+
+
 
     # Release teh videocapyure object
     video_capture.release()
