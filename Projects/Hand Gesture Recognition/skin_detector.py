@@ -128,7 +128,7 @@ class SkinDetector:
         Function to get the skin mask
         """
         w, h, channels = input.shape
-        skin_mask = np.zeros((w, h), np.uint8)
+        skin_mask = np.zeros((w, h, channels), np.uint8)
 
         if not self.calibrated:
             # The user has performed any calibration

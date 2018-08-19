@@ -23,6 +23,7 @@ import cv2
 import numpy as np
 from skin_detector import SkinDetector
 from face_detector import FaceDetector
+from background_removal import BackgroundRemover
 
 def main_method():
     """
@@ -42,6 +43,7 @@ def main_method():
     # Create all the necessary objects
     skin_det = SkinDetector()
     face_det = FaceDetector()
+    back_rem = BackgroundRemover()
 
     while True:
 
@@ -50,24 +52,30 @@ def main_method():
 
         frame_out = frame.copy()
 
-        # Draw the sample rectangles
+        # Draw the sample rectangles, where teh user has to place his hand
         skin_det.skin_color_sampler(frame_out)
 
-        # Face Detector
-        face_det.remove_faces(frame)
+        # Remove the background for better results
+        foreground = back_rem.get_foreground(frame)
 
-        hand_mask = skin_det.get_skin_mask(frame);
+        # Face Detector
+        face_det.remove_faces(foreground)
+        #
+        hand_mask = skin_det.get_skin_mask(foreground);
 
         cv2.imshow("Frame Out Window", frame_out)
         cv2.imshow("Hand Mask", hand_mask)
-        
+
         key = cv2.waitKey(1)
         # Break out of teh while loop on pressing 'q'
         if key & 0xFF == ord('q'):
             print("Qutting Now")
             break
-
-        if key == 115:
+        elif key == 98:
+            # user has pressed 'b'
+            # Remove background
+            back_rem.calibrate(frame)
+        elif key == 115:
             # The user pressed s
             # Then we need to calibrate
             skin_det.calibrate(frame)
