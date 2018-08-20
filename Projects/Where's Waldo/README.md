@@ -7,3 +7,7 @@
 
 #### Setps to Run
 * ```python find_waldo.py --puzzle_image easy_waldo.jpg --query_image basic_full_image.JPG```
+
+
+#### Credits
+* https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/
