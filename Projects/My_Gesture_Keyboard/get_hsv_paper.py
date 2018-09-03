@@ -49,7 +49,7 @@ def setup_trackbars(range_filter):
     @range_filter: either RGB or HSV
     """
     # Create a new cv2 window
-    cv2.namedWindow("trackbars")
+    cv2.namedWindow("Range Filter Trackbars", 0)
 
     for i in ["MIN", "MAX"]:
         if i == "MIN":
@@ -62,7 +62,7 @@ def setup_trackbars(range_filter):
             cv2.createTrackbar("%s_%s" %(j, i), "Range Filter Trackbars", v, 255, callback_func)
 
 
-def callback_func():
+def callback_func(dummy_val):
     """
     A dummy call back function for the onChange event
     """
@@ -85,3 +85,91 @@ def get_trackbar_values(range_filter):
             track_values.append(v)
 
     return track_values
+
+def main_func():
+    # First accept the user arguments
+
+    args = parse_arguments()
+    print(args)
+
+    # Get the range filter from the dictionary
+    # Range filter can be either "RGB" or "HSV"
+    range_filter = args["filter"].upper()
+
+    # If an image is passed in as argument
+    if args["image"]:
+        # Read teh image as-is
+        frame = cv2.imread(args["image"])
+
+        if range_filter == "RGB":
+            # Create a copy, no need to convert the image
+            frame_to_thresh = frame.copy()
+        else:
+            # Need to convert it to HSV
+            frame_to_thresh = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    else:
+        # We need to capture the image from teh webcam
+        # Create a video capture object
+        video_cap = cv2.VideoCapture(0)
+
+
+    # Setup trackbars
+    # Call a helper function
+    setup_trackbars(range_filter)
+
+    while True:
+        if args["webcam"]:
+            # Start reading from the web camera
+            ret, frame = video_cap.read()
+
+            # if the camera failed to read the image
+            # break out of teh while loop
+
+            if not ret:
+                print("Camera initialization failed")
+                break
+
+            if range_filter == "RGB":
+                frame_to_thresh = frame.copy()
+            else:
+                # HSV color space
+                frame_to_thresh = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+
+        min_1, min_2, min_3, max_1, max_2, max_3 = get_trackbar_values(range_filter)
+
+        # cv2.InRange(image, lower_threshold, upper_thresold)
+        # Note -> The cv2.inRange  function expects three arguments:
+        # the first is the image  were we are going to perform color detection,
+        # the second is the lower  limit of the color you want to detect,
+        # and the third argument is the upper  limit of the color you want to detect.
+
+        # After calling cv2.inRange, a binary mask is returned,
+        # where white pixels (255) represent pixels that fall into
+        # the upper and lower limit range and black pixels (0) do not.
+        thresh = cv2.inRange(frame_to_thresh, (min_1, min_2, min_3), (max_1, max_2, max_3))
+
+
+        # If the user wants a preview of teh thresolded image
+        if args["preview"]:
+            preview_img = cv2.bitwise_and(frame, frame, mask=thresh)
+            # Display this image
+            cv2.imshow("Previow image", preview_img)
+        else:
+            cv2.imshow("Original Image", frame)
+            cv2.imshow("Thresholded Image", thresh)
+
+        # We will do a pickle dump of the trackbar values
+        # iff presses q
+        if cv2.waitKey(1) & 0xFF is ord('q'):
+            t_vals = (min_1, min_2, min_3, max_1, max_2, max_3)
+
+            with open("hsv_paper.pickle", "wb") as fd:
+                pickle.dump(t_vals, fd)
+            fd.close()
+
+            break
+
+if __name__ == "__main__":
+    main_func()
