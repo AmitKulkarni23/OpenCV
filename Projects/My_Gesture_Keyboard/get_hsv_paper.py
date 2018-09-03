@@ -8,7 +8,7 @@
 import argparse
 import pickle
 from operator import xor
-
+import cv2
 
 # Parse the arguments first
 def parse_arguments():
@@ -42,3 +42,46 @@ def parse_arguments():
 
 
     return args
+
+def setup_trackbars(range_filter):
+    """
+    Function to setup trackbars on the user screen
+    @range_filter: either RGB or HSV
+    """
+    # Create a new cv2 window
+    cv2.namedWindow("trackbars")
+
+    for i in ["MIN", "MAX"]:
+        if i == "MIN":
+            v = 0
+        else:
+            v = 255
+
+
+        for j in range_filter:
+            cv2.createTrackbar("%s_%s" %(j, i), "Range Filter Trackbars", v, 255, callback_func)
+
+
+def callback_func():
+    """
+    A dummy call back function for the onChange event
+    """
+    pass
+
+
+def get_trackbar_values(range_filter):
+    """
+    Function to get the trackbar values set by the user
+    @range_filter : The range filter passed in the user as command line
+    argument( either HSV or RGB)
+    """
+
+    track_values = []
+
+    for i in ["MIN", "MAX"]:
+        for j in range_filter:
+            # getTrackbarPos - (trackbarname, windowname)
+            v = cv2.getTrackbarPos("%s_%s" %(j, i), "Range Filter Trackbars")
+            track_values.append(v)
+
+    return track_values
