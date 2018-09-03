@@ -56,12 +56,12 @@ def main_method():
         skin_det.skin_color_sampler(frame_out)
 
         # Remove the background for better results
-        foreground = back_rem.get_foreground(frame)
+        # foreground = back_rem.get_foreground(frame)
 
         # Face Detector
-        face_det.remove_faces(foreground)
+        face_det.remove_faces(frame)
         #
-        hand_mask = skin_det.get_skin_mask(foreground);
+        hand_mask = skin_det.get_skin_mask(frame);
 
         cv2.imshow("Frame Out Window", frame_out)
         cv2.imshow("Hand Mask", hand_mask)
