@@ -38,7 +38,7 @@ video_frame_height = video_cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 # Space Bar - equivalent to 5 keys
 
 max_keys_in_row = 10
-key_width = video_frame_width // max_keys_in_row
+key_width = int(video_frame_width / max_keys_in_row)
 
 
 # Now every key is a square( therefore, key_width = key_height)
@@ -65,7 +65,7 @@ def get_key_info():
     # Why? - Because we need equal margins on both sides( top and bottom)
     # Why * 4 ? - Becuase we have 4 rows
 
-    x1, y1 = 0, (video_frame_height - key_width * 4) // 2
+    x1, y1 = 0, int((video_frame_height - key_width * 4) / 2)
     # Since these are square keys just add keywidth to find the bottom right
     # co-ordinate
     x2, y2 = x1 + key_width, y1 + key_width
@@ -89,7 +89,7 @@ def get_key_info():
     # first key in row 2 should be placed a little to teh right of the first
     # key in row1. Similarly the last key should be placed a little to the left of
     # last key in row1
-    x1 = (row1_key_width - row2_key_width) // 2
+    x1 = int((row1_key_width - row2_key_width) / 2)
     y1 = y1 + key_width
     x2, y2 = x1 + key_width, y1 + key_width
 
@@ -108,7 +108,7 @@ def get_key_info():
     x1, y1 = c1, c2
 
     # Third row
-    x1 = (row2_key_width - row3_key_width) // 2
+    x1 = int((row2_key_width - row3_key_width) / 2)
     y1 = y1 + key_width
     x2, y2 = x1 + key_width, y1 + key_width
 
@@ -127,7 +127,7 @@ def get_key_info():
     x1, y1 = c1, c2
 
     # For the space bar
-    x1 = (row3_key_width - row4_key_width) // 2
+    x1 = int((row3_key_width - row4_key_width) / 2)
     y1 = y1 + key_width
     x2, y2 = x1 + 5 * key_width, y1 + key_width
 
@@ -162,9 +162,9 @@ def perform_key_press(image, center, row_key_points):
 
         if top_left == [1, 1] and bottom_right == [1, 1]:
             # We have identified the key to press
-            gui.press(key[0])
+            pgui.press(item[0])
             # Indicate that the key is pressed with a blue mark on the key
-            cv2.fillConvexPoly(image, np.array([np.array(row[1]), np.array([row[1][0], row[2][1]]), np.array(row[2]), np.array([row[2][0], row[1][1]])]), (255, 0, 0))
+            cv2.fillConvexPoly(image, np.array([np.array(item[1]), np.array([item[1][0], item[2][1]]), np.array(item[2]), np.array([item[2][0], item[1][1]])]), (255, 0, 0))
 
     return image
 
@@ -188,7 +188,7 @@ def main_func():
 
     while True:
         # Start reading teh frames from teh webacme
-        frame, ret = video_cap.read()
+        frame = video_cap.read()[1]
 
         frame = cv2.flip(frame, 1)
 
@@ -238,9 +238,8 @@ def main_func():
 
                 # Draw a a green dot / circle on the center of teh yellow paper
                 cv2.circle(frame, tuple(np.int0(center)), 2, (0, 255, 0), 2)
-
                 # Draw a red rectangle / bounding box around the yellow paper
-				cv2.drawContours(frame,[box],0,(0,0,255),2))
+                cv2.drawContours(frame,[box],0,(0,0,255),2)
 
                 # For every 3rd iteration we calculate the difference of area
                 # What is area? - the area of the contour
@@ -288,22 +287,23 @@ def main_func():
                         is_key_pressed = False
             else:
                 is_key_pressed = False
+        else:
+            is_key_pressed = False
 
+        # Dipslay the keyboard no matter what
+        for key in row_key_points:
+            cv2.putText(frame, key[0], key[3], cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0))
+            cv2.rectangle(frame, key[1], key[2], (0, 255, 0), thickness = 2)
 
-            # Dipslay the keyboard no matter what
-            for key in row_key_points:
-                cv2.putText(frame, key[0], key[3], cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0))
-                cv2.rectangle(frame, key[1], key[2], (0, 255, 0), thickness = 2)
+        cv2.imshow("My Virtual keyboard", frame)
 
-		    cv2.imshow("My Virtual keyboard", img)
-
-    		if cv2.waitKey(1) == ord('q'):
-                # Break out of while loop if the user presses q
-    			break
+        if cv2.waitKey(1) == ord('q'):
+            # Break out of while loop if the user presses q
+            break
 
     # Relase all resources
     video_cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main_func()    
+    main_func()
