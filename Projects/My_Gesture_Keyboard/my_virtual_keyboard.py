@@ -146,7 +146,24 @@ def get_key_info():
     return row_keys
 
 
-def perform_key_press():
+def perform_key_press(image, center, row_key_points):
     """
-    Function that sumates a key press
+    Function that simulates a key press
+    image : the image object
+    center : the position of click
+    row_keys
     """
+    # If the position of click is (x, y)
+    # then teh key pressed will be (x1<=x<=x2, y1<=y<=y2)
+
+    for item in row_key_points:
+        top_left = list(np.int0(np.array(center)) >= np.array(item[1]))
+        bottom_right = list(np.int0(np.array(center)) <= np.array(item[2]))
+
+        if top_left == [1, 1] and bottom_right == [1, 1]:
+            # We have identified the key to press
+            gui.press(key[0])
+            # Indicate that the key is pressed with a blue mark on the key
+            cv2.fillConvexPoly(image, np.array([np.array(row[1]), np.array([row[1][0], row[2][1]]), np.array(row[2]), np.array([row[2][0], row[1][1]])]), (255, 0, 0))
+
+    return image
