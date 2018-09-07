@@ -167,3 +167,143 @@ def perform_key_press(image, center, row_key_points):
             cv2.fillConvexPoly(image, np.array([np.array(row[1]), np.array([row[1][0], row[2][1]]), np.array(row[2]), np.array([row[2][0], row[1][1]])]), (255, 0, 0))
 
     return image
+
+def main_func():
+    """
+    Function that performs the following
+    - Recognizes the yellow paper
+    - Gets the corner co-ordinates of every key by calling get_keys()
+    - Detects the center position of the yellow paper
+    - If the click gesture is valied calls the perform_key_press() function
+    """
+
+    # get the keys first
+    row_key_points = get_key_info()
+    new_area = 0
+    old_area = 0
+
+    c, c2 = 0, 0
+
+    is_key_pressed = False
+
+    while True:
+        # Start reading teh frames from teh webacme
+        frame, ret = video_cap.read()
+
+        frame = cv2.flip(frame, 1)
+
+        # Convert the given image to HSV format
+        frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # Apply the mask
+        mask = cv2.inRange(frame_hsv, hsv_lower, hsv_upper)
+
+        # Smoothen the image
+        # Apply median blur -> runs through each element of the image
+        # and replaces teh pixel with the median of the neighbouring
+        # pixels
+
+        blur = cv2.medianBlur(src=mask, ksize=15)
+
+        # Now apply Guassian filter
+        blur = cv2.GaussianBlur(blur, (5, 5), 0)
+
+
+        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
+
+        # What are contours? - Contours can be explained simply as a curve
+        # joining all the continuous points (along the boundary), having same color or intensity
+        # 1st parameter - source image
+        # 2nd paramter - retrieval mode
+        # 3rd paramtere - Approximation method
+        # ( CHAIN_APPROX_NONE -> all the boundary points are stored)
+        contours = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[1]
+
+
+        if len(contours) > 0:
+            # get the contour with the maximum area
+            countour_max_area = max(contours, key=cv2.contourArea)
+
+            if cv2.contourArea(countour_max_area) > 350:
+                # cv2.minAreaRect -> returns the minimum-area bounding rectangle
+                # it returns a box2d structure - ( center (x,y), (width, height), angle of rotation )
+                rect = cv2.minAreaRect(countour_max_area)
+
+                center = rect[0]
+
+                # But to draw this recatngle, we need 4 corners of the rectangle
+                # Therefore we use the API - cv2.boxPoints()
+                box = cv2.boxPoints(rect)
+
+                box = np.int0(box)
+
+                # Draw a a green dot / circle on the center of teh yellow paper
+                cv2.circle(frame, tuple(np.int0(center)), 2, (0, 255, 0), 2)
+
+                # Draw a red rectangle / bounding box around the yellow paper
+				cv2.drawContours(frame,[box],0,(0,0,255),2))
+
+                # For every 3rd iteration we calculate the difference of area
+                # What is area? - the area of the contour
+                # What contour -> The max contour in the yellow paper
+
+                new_area = cv2.contourArea(countour_max_area)
+                new_center = np.int0(center)
+
+                # Area caclulation
+                if c == 0:
+                    old_area = new_area
+                c += 1
+                diff_area = 0
+
+                if c > 3:
+                    # After every 3rd iteration teh differenc in area is calculated
+                    diff_area = new_area - old_area
+                    c = 0
+
+                # Center Calculation
+                if c2 == 0:
+                    old_center = new_center
+
+                c2 += 1
+                diff_center = np.array([0, 0])
+
+                if c2 > 5:
+                    # After every 5 iterations we calculate teh new center
+                    diff_center = new_center - old_center
+                    c2 = 0
+
+
+                center_thresh = 10
+                area_thresh = 200
+
+                if abs(diff_center[0]) < center_thresh or abs(diff_center[1]) < center_thresh:
+                    if diff_area > area_thresh and is_key_pressed == False:
+                        # Everything is in proper state
+                        # The yellow paper is newar the webcam is not moving too
+                        # fast or too slow. IT IS A CLICK gesture
+                        frame = perform_key_press(frame, new_center, row_key_points)
+                        is_key_pressed = False
+                    elif diff_area < -(area_thresh) and is_key_pressed == True:
+                        # The user has moved away from the screen after the key press has occurred
+                        is_key_pressed = False
+            else:
+                is_key_pressed = False
+
+
+            # Dipslay the keyboard no matter what
+            for key in row_key_points:
+                cv2.putText(frame, key[0], key[3], cv2.FONT_HERSHEY_DUPLEX, 1, (0, 255, 0))
+                cv2.rectangle(frame, key[1], key[2], (0, 255, 0), thickness = 2)
+
+		    cv2.imshow("My Virtual keyboard", img)
+
+    		if cv2.waitKey(1) == ord('q'):
+                # Break out of while loop if the user presses q
+    			break
+
+    # Relase all resources
+    video_cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main_func()    
