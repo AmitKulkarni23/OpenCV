@@ -9,3 +9,10 @@
 ##### Constraints
 - Every key of the keyboard is of fixed length
 - All keys are square
+
+##### Observations / Conclusion
+- Used a FREERATIO window size so as to allow the user to stretch the window as
+  per the resolution of the screen
+- Note: The best lower and upper bounds for the yellow paper(post-it) was:
+  [ 20  21 181]
+  [ 32  98 255]
