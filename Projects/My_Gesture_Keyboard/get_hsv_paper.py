@@ -3,6 +3,9 @@
 # Finally, a .pickle file is generated
 # What is pickle in Python? - Object hierarchy is converted into byte stream
 
+# Note -> The best values for a yellow paper( post it / sticky note ) was:
+# [ 20  21 181]
+# [ 32  98 255]
 
 # import statements
 import argparse
