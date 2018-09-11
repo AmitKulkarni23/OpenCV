@@ -14,7 +14,8 @@ arg_parse.add_argument("-i", "--image", required=True,
 help="Enter the path to the input image")
 
 # Creates a dictionary of arguments parse using argument parser
-user_args = vars(arg_parse)
+user_args = vars(arg_parse.parse_args())
+print(user_args["image"])
 
 # The color of the rectangle that will be drawn on teh image
 rect_color = (0, 255, 0)
