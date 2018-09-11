@@ -17,3 +17,8 @@ Project related to a QR code reader and a bar code scanner in OpenCV
 - Data : Data embedded inside the barcode / QR code
 - Location : Collection of points that locate the QR Code or bar code
              Eg: List of 4 points corresponding to four corners of the QR Code quad
+
+
+##### Results
+![Initial Image](https://github.com/AmitKulkarni23/OpenCV/blob/master/Projects/BarCodeReader/qr_code_linkedin.png)
+![Bounding Rectangle](https://github.com/AmitKulkarni23/OpenCV/blob/master/Projects/BarCodeReader/qr_code_reader.JPG)
