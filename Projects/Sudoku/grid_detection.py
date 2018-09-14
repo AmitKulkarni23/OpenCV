@@ -1,6 +1,8 @@
 # Python file which uses Hough Line Transform technique to perform grid detection
 # on the Sudoku material
 
+# Credits -> Highly inspired by https://caphuuquan.blogspot.com/2017/04/building-simple-sudoku-solver-from.html
+
 # import statements
 import cv2
 import numpy as np
