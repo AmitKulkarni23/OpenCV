@@ -10,7 +10,7 @@ import numpy as np
 cv2.namedWindow("Sudoku Solver")
 minVal = 30
 ratio = 3
-
+kernel_size = 3
 # We will input the Sudoku image to the program with the help of the web camera
 # Therefore, create a video capture object
 
@@ -43,7 +43,7 @@ while return_val:
     # 4) Hysteresis Thresholding
 
     # cv2.cannyimage, minVal, maxVal)
-    edges = cv2.Canny(sudoku_img, minVal, minVal * ratio)
+    edges = cv2.Canny(sudoku_img, minVal, minVal * ratio, kernel_size)
 
     # Now apply Hough Line transform to these edges
     # Working of Hough Line Transform
@@ -55,7 +55,10 @@ while return_val:
 
     lines = cv2.HoughLines(edges, 2, np.pi / 180, 300, 0, 0)
 
+    # print(len(lines))
+
     if lines is not None:
+        # print("Coming into the if loop")
         lines = lines[0]
 
         lines = sorted(lines, key=lambda line:line[0])
@@ -71,10 +74,10 @@ while return_val:
             x0 = a * rho
             y0 = b * rho
 
-            x1 = int(x0 + 1000 * -b)
-            y1 = int(x0 + 1000 * a)
-            x2 = int(x0 - 1000 * -b)
-            y2 = int(x0 - 1000 * a)
+            x1 = int(x0 + 1000 * (-b))
+            y1 = int(y0 + 1000 * a)
+            x2 = int(x0 - 1000 * (-b))
+            y2 = int(y0 - 1000 * a)
 
             if b > 0.5:
                 # Check the psoition of the line
