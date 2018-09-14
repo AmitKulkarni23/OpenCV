@@ -53,4 +53,50 @@ while return_val:
     # where rho is the perpendicular distance between the origin and the line
     # theta - the angle it forms with the x-axis
 
-    
+    lines = cv2.HoughLines(edges, 2, np.pi / 180, 300, 0, 0)
+
+    if lines is not None:
+        lines = lines[0]
+
+        lines = sorted(lines, key=lambda line:line[0])
+
+        # The x-axis and y-axis position
+        x_axis_pos = 0
+        y_axis_pos = 0
+
+        for rho, theta in lines:
+            a = np.cos(theta)
+            b = np.sin(theta)
+
+            x0 = a * rho
+            y0 = b * rho
+
+            x1 = int(x0 + 1000 * -b)
+            y1 = int(x0 + 1000 * a)
+            x2 = int(x0 - 1000 * -b)
+            y2 = int(x0 - 1000 * a)
+
+            if b > 0.5:
+                # Check the psoition of the line
+                if rho - x_axis_pos > 10:
+                    x_axis_pos = rho
+                    # Draw a line along the edge
+                    cv2.line(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            else:
+                if rho - y_axis_pos > 10:
+                    y_axis_pos = rho
+                    cv2.line(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+
+
+    # Display the result
+    cv2.imshow("Sudoku Solver", frame)
+    return_val, frame = video_capture.read()
+    key = cv2.waitKey(1)
+    if key == 27:
+        # User has pressed ESC
+        break
+
+# Release the video capture object
+video_capture.release()
+# Destroy all open windows
+cv2.destroyAllWindows()
