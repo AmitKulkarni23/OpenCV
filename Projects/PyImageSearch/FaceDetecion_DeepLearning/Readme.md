@@ -17,4 +17,4 @@
 
 
 ##### Screenshots
-![alt text](http://url/to/img.png)
+![DNN Face Recognition](https://github.com/AmitKulkarni23/OpenCV/blob/master/Projects/PyImageSearch/FaceDetecion_DeepLearning/face_recognition.JPG)
