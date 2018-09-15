@@ -1,0 +1,71 @@
+All images consist of pixels which are the raw building blocks of images.
+Images are made of pixels in a grid.
+A 640 x 480 image has 640 rows and 480 columns.
+There are 640 * 480 = 307200  pixels in an image with those dimensions.
+
+Each pixel in a grayscale image has a value representing the shade of gray.
+In OpenCV, there are 256 shades of gray — from 0 to 255. So a grayscale image
+would have a grayscale value associated with each pixel.
+
+Pixels in a color image have additional information.
+
+In OpenCV color images in the RGB (Red, Green, Blue) color space
+have a 3-tuple associated with each pixel: (B, G, R) .
+
+Notice the ordering is BGR rather than RGB. This is because when OpenCV was
+first being developed many years ago the standard was BGR ordering.
+Over the years, the standard has now become RGB but OpenCV still maintains this
+“legacy” BGR ordering to ensure no existing code breaks.
+
+Each value in the BGR 3-tuple has a range of [0, 255] . How many color
+possibilities are there for each pixel in an RGB image in OpenCV?
+That’s easy: 256 * 256 * 256 = 16777216 .
+
+
+------------------------------
+
+Array Slicing and Cropping
+image[startY:endY, startX:endX]
+
+------------------------------
+
+Smoothing an Image
+
+In many image processing pipelines, we must blur an image to reduce
+high-frequency noise, making it easier
+for our algorithms to detect and understand the actual contents of the image
+rather than just noise that will “confuse” our algorithms.
+
+NOTE: DRAWING OPERATIONS IN OPENCV TAKE PLACE IN-PLACE
+(Therefore, it is better to take a copy of the image before starting any drawing)
+
+Larger kernels will yield more blurry images
+Smaller kernels will create less blurry images
+
+------------------------------
+
+Canny Edge Detection
+cv2.Canny(image, minVal, maxVal)
+
+Thresholding
+cv2.threshold(gray_scale_image, threshold_val, maxVal)
+threshold_val -> threshold_value used to classify the images
+maxVal -> value to be given to the pixel if it is less than or sometimes more than the source
+          (depends on the flags provided as the fourth argument)
+THRESH_BINARY
+THRESH_BINARY_INV
+THRESH_TRUNC
+THRESH_TOZERO
+THRESH_TOZERO_INV
+
+------------------------------
+
+Erosions and Dilations
+- Typically used to reduce noise in binary images
+
+------------------------------
+
+Masking and bitiwse operations
+
+Masks allow us to “mask out” regions of an image we are uninterested in.
+We call them “masks” because they will hide regions of images we do not care about.
