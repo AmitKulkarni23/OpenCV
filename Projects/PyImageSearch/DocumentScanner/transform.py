@@ -35,3 +35,43 @@ def order_points(pts):
 
     # Finally return this ordered ordered points
     return rect
+
+
+def get_fourpoint_transform(image, pts):
+    """
+    Function that returns the top-down view of an image
+
+    pts - list of 4 points that contains the ROI of the image
+    """
+
+    rect = order_points(pts)
+
+    # Unpack the four corners of the rectangle
+    (tl, tr, br, bl) = rect
+
+    # Compute the width of the image
+    # width = max(dist(br, bl), dis(tr, tl))
+    width_a = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    width_b = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+
+    max_width = max(int(width_a), int(width_b))
+
+    # Compute the height of the image
+    # height = max(dist(tr, br), dist(tl, bl))
+
+    height_a = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    height_b = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+
+    max_height = max(int(height_a), int(height_b))
+
+    # Construct the bird's eye view of the image
+    # in the tl, tr, br and bl order
+
+    dest = np.array([[0, 0], [max_width - 1, 0], [max_width-1, max_height-1], [0, max_height-1]], dtype="float32")
+
+    my_matrix = cv2.getPerspectiveTransform(rect, dest)
+    # Apply this perspective transform
+    warped = cv2.warpPerspective(image, my_matrix, (max_width, max_height))
+
+
+    return warped
