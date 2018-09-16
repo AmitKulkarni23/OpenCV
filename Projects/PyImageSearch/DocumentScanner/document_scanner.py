@@ -4,7 +4,11 @@
 
 # Steps Involved
 # 1. Edge Detection
-
+# 2. Fnding Contours
+    # - Scanning a piece of paper
+    # - A paper is assumed to be rectangle in shape
+    # - Rectangle has 4 edges
+    # - ASSUMPTION - Largest contour in the image with 4 points is indeed the paper
 
 # Import Statements
 import numpy as np
@@ -13,6 +17,10 @@ import argparse
 import imutils
 import transform
 from skimage.filters import threshold_local
+
+# Global variable
+# This variable will be populated with the contour outline
+# paper = None
 
 # parse the user arguments
 ap = argparse.ArgumentParser()
@@ -41,9 +49,38 @@ grayscale_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 grayscale_img = cv2.GaussianBlur(grayscale_img, (5, 5), 0)
 edges = cv2.Canny(grayscale_img, 75, 200)
 
+cv2.imshow("Original Image", image)
+cv2.imshow("After Edge Detection", edges)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+# Use findContours API
+im2, contours, hierarchy = cv2.findContours(edges.copy(),cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+
+# Sort contours based on their area
+# We are assuming here that the contour with the maximum area is the paper itself
+contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5]
+
+# Iterate over these contours
+for cont in contours:
+
+    # Approximate the number of points in the contour
+    # Use contour features
+    perimeter = cv2.arcLength(cont, True)
+
+    # approxPolyDP -> uses Douglas Peucker algorithm to approximate the shape
+    # of the polygon
+    approx = cv2.approxPolyDP(cont, 0.02 * perimeter, True)
+
+
+    if len(approx) == 4:
+        # Its a rectangle / square
+        # means we have found the document in the image
+        paper = approx
+        break
 
 # Show the images
-cv2.imshow("original Image", image)
-cv2.imshow("After Edge Detection", edges)
+cv2.drawContours(image, [paper], -1, (0, 255, 0), 2)
+cv2.imshow("Contour Outline", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
