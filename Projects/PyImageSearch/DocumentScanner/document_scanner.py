@@ -9,6 +9,9 @@
     # - A paper is assumed to be rectangle in shape
     # - Rectangle has 4 edges
     # - ASSUMPTION - Largest contour in the image with 4 points is indeed the paper
+# 3. Apply 4 point perspective transformation to obatin a bird's eye-view of the
+# document
+
 
 # Import Statements
 import numpy as np
@@ -51,8 +54,6 @@ edges = cv2.Canny(grayscale_img, 75, 200)
 
 cv2.imshow("Original Image", image)
 cv2.imshow("After Edge Detection", edges)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
 
 # Use findContours API
 im2, contours, hierarchy = cv2.findContours(edges.copy(),cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
@@ -82,5 +83,25 @@ for cont in contours:
 # Show the images
 cv2.drawContours(image, [paper], -1, (0, 255, 0), 2)
 cv2.imshow("Contour Outline", image)
+
+
+
+# get the TO-DOWN view
+# pass the original image and the shape of the paper multiplied by the ratio
+
+warped = transform.get_fourpoint_transform(orig_image, paper.reshape(4, 2) * ratio)
+
+# Convert the warped image and convert it to grayscale
+warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
+
+# Apply adaptive thresolding on this grayscale image
+# Adaptive Thresholding - http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
+T = threshold_local(warped, block_size=11, offset=10, method='gaussian')
+
+warped = (warped > T).astype("uint8") * 255
+warped = imutils.resize(warped, height = 500)
+
+# Scanned image
+cv2.imshow("Scanned Image", warped)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
