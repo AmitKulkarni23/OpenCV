@@ -94,11 +94,7 @@ warped = transform.get_fourpoint_transform(orig_image, paper.reshape(4, 2) * rat
 # Convert the warped image and convert it to grayscale
 warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
 
-# Apply adaptive thresolding on this grayscale image
-# Adaptive Thresholding - http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
-T = threshold_local(warped, block_size=11, offset=10, method='gaussian')
-
-warped = (warped > T).astype("uint8") * 255
+warped = cv2.adaptiveThreshold(warped, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 251, 11)
 warped = imutils.resize(warped, height = 500)
 
 # Scanned image
